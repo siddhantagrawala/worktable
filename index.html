@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>WORK TABLE — A Coworking Community | 3D Experience</title>
+  <meta name="description"
+    content="Explore WORK TABLE's premium coworking spaces in an immersive 3D experience. 816 seats across 9 floors in Sector-135, Noida.">
+  <link rel="icon"
+    href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' rx='6' fill='%231a1a1a'/><text x='16' y='22' text-anchor='middle' fill='%23c17f59' font-size='16' font-weight='bold'>W</text></svg>">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=DM+Sans:wght@400;500;700&display=swap"
+    rel="stylesheet">
+  <link rel="stylesheet" href="/style.css">
+</head>
+
+<body>
+  <!-- Loading Screen -->
+  <div id="loader">
+    <div class="loader-content">
+      <div class="loader-logo">WORK <span>TABLE</span></div>
+      <div class="loader-tagline">A Coworking Community</div>
+      <div class="loader-bar-track">
+        <div class="loader-bar-fill" id="loaderBar"></div>
+      </div>
+      <div class="loader-pct" id="loaderPct">Loading 3D Experience...</div>
+    </div>
+  </div>
+
+  <!-- 3D Canvas Container -->
+  <canvas id="scene"></canvas>
+
+  <!-- Top Navigation Bar -->
+  <header id="topNav">
+    <div class="nav-brand">WORK <span>TABLE</span></div>
+    <nav class="nav-links">
+      <button data-section="overview" class="nav-link active">Overview</button>
+      <button data-section="floors" class="nav-link">Floors</button>
+      <button data-section="spaces" class="nav-link">Spaces</button>
+      <button data-section="pricing" class="nav-link">Pricing</button>
+      <button data-section="contact" class="nav-link">Contact</button>
+    </nav>
+    <button class="nav-cta" id="tourBtn">🎬 Guided Tour</button>
+  </header>
+
+  <!-- Exploration Guide -->
+  <div id="exploreGuide" class="guide-panel">
+    <div class="guide-icon">🖱️</div>
+    <div class="guide-text">
+      <strong>Explore the Building</strong>
+      <span>Drag to orbit · Scroll to zoom · Click floors for details</span>
+    </div>
+    <button class="guide-close" id="guideClose">✕</button>
+  </div>
+
+  <!-- Building Info Panel (left sidebar) -->
+  <div id="infoPanel" class="info-panel">
+    <div class="info-header">
+      <h2 id="infoPanelTitle">WORK TABLE</h2>
+      <p id="infoPanelSubtitle">Sector-135, Noida · Noida Expressway</p>
+    </div>
+    <div class="info-stats" id="infoPanelStats">
+      <div class="info-stat">
+        <span class="info-stat-value" data-count="10">10</span>
+        <span class="info-stat-label">Floors</span>
+      </div>
+      <div class="info-stat">
+        <span class="info-stat-value" data-count="816">816</span>
+        <span class="info-stat-label">Seats</span>
+      </div>
+      <div class="info-stat">
+        <span class="info-stat-value" data-count="14023">14,023</span>
+        <span class="info-stat-label">Sq.Ft</span>
+      </div>
+    </div>
+    <div class="info-features" id="infoPanelFeatures">
+      <div class="info-feature">🏛️ Vastu Compliant · NE Facing</div>
+      <div class="info-feature">🚇 Metro 1km · Sector-142</div>
+      <div class="info-feature">🛣️ Noida Expressway Access</div>
+      <div class="info-feature">🅿️ 2 Basement Parkings</div>
+      <div class="info-feature">🛗 4 Passenger + 1 Service Lift</div>
+    </div>
+  </div>
+
+  <!-- Floor Detail Modal -->
+  <div id="floorModal" class="floor-modal hidden">
+    <div class="floor-modal-content">
+      <button class="floor-modal-close" id="modalClose">✕</button>
+      <div class="floor-modal-header">
+        <h3 id="modalTitle">Floor 1</h3>
+        <span class="floor-modal-badge" id="modalBadge">Available</span>
+      </div>
+      <div class="floor-modal-image" id="modalImage"></div>
+      <div class="floor-modal-grid" id="modalGrid"></div>
+      <div class="floor-modal-desc" id="modalDesc"></div>
+    </div>
+  </div>
+
+  <!-- Pricing Panel (hidden, shown on section switch) -->
+  <div id="pricingPanel" class="pricing-panel hidden">
+    <h2 class="pricing-title">Workspace Plans</h2>
+    <div class="pricing-cards">
+      <div class="pricing-card">
+        <div class="pricing-tier">Starter</div>
+        <div class="pricing-amount"><span class="currency">₹</span>1,000</div>
+        <div class="pricing-period">per slot</div>
+        <ul class="pricing-features">
+          <li>Open Desk access</li>
+          <li>High-speed Wi-Fi</li>
+          <li>Tea & coffee included</li>
+          <li>Business hours (8am–7pm)</li>
+        </ul>
+      </div>
+      <div class="pricing-card featured">
+        <div class="pricing-badge">Popular</div>
+        <div class="pricing-tier">Professional</div>
+        <div class="pricing-amount"><span class="currency">₹</span>1,500</div>
+        <div class="pricing-period">per slot</div>
+        <ul class="pricing-features">
+          <li>Dedicated desk</li>
+          <li>Meeting room (4 hrs/mo)</li>
+          <li>Storage locker</li>
+          <li>Extended hours access</li>
+        </ul>
+      </div>
+      <div class="pricing-card">
+        <div class="pricing-tier">Enterprise</div>
+        <div class="pricing-amount"><span class="currency">₹</span>3,000</div>
+        <div class="pricing-period">per slot</div>
+        <ul class="pricing-features">
+          <li>Private cabin access</li>
+          <li>Conference room (6 hrs/mo)</li>
+          <li>Visitor management</li>
+          <li>24/7 access</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <!-- Contact Panel -->
+  <div id="contactPanel" class="contact-panel hidden">
+    <h2 class="pricing-title">Book a Tour</h2>
+    <div class="contact-grid">
+      <div class="contact-card">
+        <div class="contact-icon">📍</div>
+        <h4>Visit Us</h4>
+        <p>Sector-135, Noida<br>Uttar Pradesh, India</p>
+      </div>
+      <div class="contact-card">
+        <div class="contact-icon">⏰</div>
+        <h4>Hours</h4>
+        <p>Mon–Sat: 8am – 7pm<br>Sunday: Closed</p>
+      </div>
+      <div class="contact-card">
+        <div class="contact-icon">🚇</div>
+        <h4>Metro</h4>
+        <p>Sector-142 Station<br>1 km away</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Floor Labels (3D overlay, positioned by JS) -->
+  <div id="floorLabels"></div>
+
+  <script type="module" src="/main.js"></script>
+</body>
+
+</html>
