@@ -384,16 +384,18 @@ export default function ThreeDLanding() {
                     roughness: 0.2,
                     metalness: 0.8
                 });
+                const whiteMat = new THREE.MeshStandardMaterial({ color: 0xffffff, roughness: 0.9 });
+                const grayMat = new THREE.MeshStandardMaterial({ color: 0x555555, roughness: 0.6 });
 
-                // Improved desk layout with better desk design
-                for (let row = 0; row < 3; row++) {
+                // === REGULAR DESKS (60 desks) ===
+                for (let row = 0; row < 4; row++) {
                     for (let col = 0; col < 5; col++) {
                         const xPos = -4.5 + col * 2.2;
-                        const zPos = -3.5 + row * 3;
+                        const zPos = -4 + row * 2.4;
 
-                        // Desk top
+                        // Desk top with rounded edge simulation
                         const desk = new THREE.Mesh(
-                            new THREE.BoxGeometry(1.9, 0.06, 0.95),
+                            new THREE.BoxGeometry(1.85, 0.06, 0.9),
                             deskMat.clone()
                         );
                         desk.position.set(xPos, -1.55, zPos);
@@ -401,13 +403,22 @@ export default function ThreeDLanding() {
                         desk.receiveShadow = true;
                         group.add(desk);
 
+                        // Desk drawer unit
+                        const drawer = new THREE.Mesh(
+                            new THREE.BoxGeometry(0.4, 0.35, 0.5),
+                            grayMat
+                        );
+                        drawer.position.set(xPos + 0.6, -1.65, zPos + 0.1);
+                        drawer.castShadow = true;
+                        group.add(drawer);
+
                         // Desk legs (modern metal)
-                        const legGeo = new THREE.BoxGeometry(0.06, 1.5, 0.06);
+                        const legGeo = new THREE.BoxGeometry(0.05, 1.5, 0.05);
                         const legPositions = [
-                            [xPos - 0.8, zPos - 0.35],
-                            [xPos + 0.8, zPos - 0.35],
-                            [xPos - 0.8, zPos + 0.35],
-                            [xPos + 0.8, zPos + 0.35]
+                            [xPos - 0.75, zPos - 0.3],
+                            [xPos + 0.75, zPos - 0.3],
+                            [xPos - 0.75, zPos + 0.3],
+                            [xPos + 0.75, zPos + 0.3]
                         ];
                         legPositions.forEach(pos => {
                             const leg = new THREE.Mesh(legGeo, deskLegMat);
@@ -416,46 +427,474 @@ export default function ThreeDLanding() {
                             group.add(leg);
                         });
 
+                        // CPU holder
+                        const cpu = new THREE.Mesh(
+                            new THREE.BoxGeometry(0.18, 0.35, 0.4),
+                            new THREE.MeshStandardMaterial({ color: 0x2a2a2a, roughness: 0.4, metalness: 0.3 })
+                        );
+                        cpu.position.set(xPos - 0.75, -2.15, zPos + 0.3);
+                        cpu.castShadow = true;
+                        group.add(cpu);
+
                         // Monitor on desk
                         const monitor = new THREE.Mesh(
-                            new THREE.BoxGeometry(0.6, 0.4, 0.05),
+                            new THREE.BoxGeometry(0.55, 0.38, 0.04),
                             monitorMat
                         );
-                        monitor.position.set(xPos, -1.25, zPos - 0.3);
+                        monitor.position.set(xPos, -1.22, zPos - 0.28);
                         group.add(monitor);
 
                         // Monitor stand
                         const stand = new THREE.Mesh(
-                            new THREE.BoxGeometry(0.08, 0.15, 0.08),
+                            new THREE.BoxGeometry(0.06, 0.12, 0.06),
                             monitorMat
                         );
-                        stand.position.set(xPos, -1.38, zPos - 0.3);
+                        stand.position.set(xPos, -1.36, zPos - 0.28);
                         group.add(stand);
+
+                        const standBase = new THREE.Mesh(
+                            new THREE.BoxGeometry(0.2, 0.02, 0.15),
+                            monitorMat
+                        );
+                        standBase.position.set(xPos, -1.52, zPos - 0.28);
+                        group.add(standBase);
+
+                        // LED lamp on desk
+                        const lampBase = new THREE.Mesh(
+                            new THREE.CylinderGeometry(0.06, 0.08, 0.03, 12),
+                            new THREE.MeshStandardMaterial({ color: 0x4a4a4a, roughness: 0.3, metalness: 0.6 })
+                        );
+                        lampBase.position.set(xPos + 0.7, -1.51, zPos - 0.25);
+                        group.add(lampBase);
+
+                        const lampPole = new THREE.Mesh(
+                            new THREE.CylinderGeometry(0.015, 0.015, 0.25, 8),
+                            new THREE.MeshStandardMaterial({ color: 0x666666, roughness: 0.3, metalness: 0.7 })
+                        );
+                        lampPole.position.set(xPos + 0.7, -1.38, zPos - 0.25);
+                        group.add(lampPole);
+
+                        const lampHead = new THREE.Mesh(
+                            new THREE.BoxGeometry(0.12, 0.04, 0.08),
+                            new THREE.MeshStandardMaterial({
+                                color: 0xffffff,
+                                emissive: 0xfff5e6,
+                                emissiveIntensity: 0.8
+                            })
+                        );
+                        lampHead.position.set(xPos + 0.7, -1.24, zPos - 0.25);
+                        group.add(lampHead);
 
                         // Chair with better design
                         const seat = new THREE.Mesh(
-                            new THREE.BoxGeometry(0.55, 0.08, 0.5),
+                            new THREE.BoxGeometry(0.52, 0.07, 0.48),
                             chairMat.clone()
                         );
-                        seat.position.set(xPos, -1.8, zPos - 0.75);
+                        seat.position.set(xPos, -1.8, zPos - 0.7);
                         seat.castShadow = true;
                         group.add(seat);
 
                         const backrest = new THREE.Mesh(
-                            new THREE.BoxGeometry(0.5, 0.45, 0.06),
+                            new THREE.BoxGeometry(0.48, 0.42, 0.05),
                             chairMat.clone()
                         );
-                        backrest.position.set(xPos, -2.05, zPos - 0.98);
+                        backrest.position.set(xPos, -2.02, zPos - 0.92);
                         group.add(backrest);
+
+                        // Chair armrests
+                        [-0.22, 0.22].forEach(xOff => {
+                            const armrest = new THREE.Mesh(
+                                new THREE.BoxGeometry(0.05, 0.25, 0.25),
+                                new THREE.MeshStandardMaterial({ color: 0x3a3a3a, roughness: 0.4, metalness: 0.5 })
+                            );
+                            armrest.position.set(xPos + xOff, -1.65, zPos - 0.55);
+                            group.add(armrest);
+                        });
 
                         // Keyboard on desk
                         const keyboard = new THREE.Mesh(
-                            new THREE.BoxGeometry(0.45, 0.02, 0.15),
+                            new THREE.BoxGeometry(0.42, 0.015, 0.12),
                             new THREE.MeshStandardMaterial({ color: 0x2a2a2a, roughness: 0.5 })
                         );
-                        keyboard.position.set(xPos, -1.51, zPos - 0.15);
+                        keyboard.position.set(xPos, -1.51, zPos - 0.12);
                         group.add(keyboard);
+
+                        // Mousepad
+                        const mousepad = new THREE.Mesh(
+                            new THREE.BoxGeometry(0.18, 0.01, 0.15),
+                            new THREE.MeshStandardMaterial({ color: 0x1a1a1a, roughness: 0.8 })
+                        );
+                        mousepad.position.set(xPos + 0.35, -1.51, zPos - 0.12);
+                        group.add(mousepad);
+
+                        // Coffee mug on desk
+                        const mug = new THREE.Mesh(
+                            new THREE.CylinderGeometry(0.035, 0.03, 0.06, 12),
+                            new THREE.MeshStandardMaterial({ color: accentColor, roughness: 0.4 })
+                        );
+                        mug.position.set(xPos - 0.65, -1.51, zPos + 0.2);
+                        group.add(mug);
+
+                        // Desk plant (small)
+                        const smallPot = new THREE.Mesh(
+                            new THREE.CylinderGeometry(0.04, 0.035, 0.06, 8),
+                            new THREE.MeshStandardMaterial({ color: 0x5a5a5a, roughness: 0.5 })
+                        );
+                        smallPot.position.set(xPos + 0.65, -1.51, zPos + 0.25);
+                        group.add(smallPot);
+
+                        const smallPlant = new THREE.Mesh(
+                            new THREE.SphereGeometry(0.04, 6, 4),
+                            new THREE.MeshStandardMaterial({ color: 0x3d6a4d, roughness: 0.7 })
+                        );
+                        smallPlant.position.set(xPos + 0.65, -1.47, zPos + 0.25);
+                        group.add(smallPlant);
                     }
+                }
+
+                // === STANDING DESKS (10 desks) - along side walls ===
+                for (let s = 0; s < 5; s++) {
+                    // Left side standing desks
+                    const sxPos = -8.2;
+                    const szPos = -4 + s * 2.2;
+
+                    const sDesk = new THREE.Mesh(
+                        new THREE.BoxGeometry(1.2, 0.05, 0.7),
+                        deskMat.clone()
+                    );
+                    sDesk.position.set(sxPos, -0.8, szPos);
+                    sDesk.castShadow = true;
+                    group.add(sDesk);
+
+                    // Standing desk legs
+                    const sLeg1 = new THREE.Mesh(
+                        new THREE.BoxGeometry(0.04, 0.8, 0.04),
+                        deskLegMat
+                    );
+                    sLeg1.position.set(sxPos - 0.5, -1.2, szPos);
+                    group.add(sLeg1);
+
+                    const sLeg2 = new THREE.Mesh(
+                        new THREE.BoxGeometry(0.04, 0.8, 0.04),
+                        deskLegMat
+                    );
+                    sLeg2.position.set(sxPos + 0.5, -1.2, szPos);
+                    group.add(sLeg2);
+
+                    // Monitor on standing desk
+                    const sMonitor = new THREE.Mesh(
+                        new THREE.BoxGeometry(0.45, 0.3, 0.04),
+                        monitorMat
+                    );
+                    sMonitor.position.set(sxPos, -0.5, szPos - 0.2);
+                    group.add(sMonitor);
+
+                    // Monitor arm
+                    const sArm = new THREE.Mesh(
+                        new THREE.BoxGeometry(0.03, 0.25, 0.03),
+                        deskLegMat
+                    );
+                    sArm.position.set(sxPos, -0.65, szPos - 0.2);
+                    group.add(sArm);
+
+                    // Right side standing desks
+                    const sxPos2 = 8.2;
+                    const szPos2 = -4 + s * 2.2;
+
+                    const sDesk2 = new THREE.Mesh(
+                        new THREE.BoxGeometry(1.2, 0.05, 0.7),
+                        deskMat.clone()
+                    );
+                    sDesk2.position.set(sxPos2, -0.8, szPos2);
+                    sDesk2.castShadow = true;
+                    group.add(sDesk2);
+
+                    const sLeg3 = new THREE.Mesh(
+                        new THREE.BoxGeometry(0.04, 0.8, 0.04),
+                        deskLegMat
+                    );
+                    sLeg3.position.set(sxPos2 - 0.5, -1.2, szPos2);
+                    group.add(sLeg3);
+
+                    const sLeg4 = new THREE.Mesh(
+                        new THREE.BoxGeometry(0.04, 0.8, 0.04),
+                        deskLegMat
+                    );
+                    sLeg4.position.set(sxPos2 + 0.5, -1.2, szPos2);
+                    group.add(sLeg4);
+
+                    const sMonitor2 = new THREE.Mesh(
+                        new THREE.BoxGeometry(0.45, 0.3, 0.04),
+                        monitorMat
+                    );
+                    sMonitor2.position.set(sxPos2, -0.5, szPos2 - 0.2);
+                    group.add(sMonitor2);
+                }
+
+                // === PHONE BOOTHS (4 booths) ===
+                const boothPositions = [
+                    { x: -7, z: 5 },
+                    { x: 7, z: 5 },
+                    { x: -7, z: -5.5 },
+                    { x: 7, z: -5.5 }
+                ];
+
+                boothPositions.forEach(bp => {
+                    // Phone booth frame
+                    const boothMat = new THREE.MeshStandardMaterial({
+                        color: 0x3a3a3a,
+                        roughness: 0.4,
+                        metalness: 0.5
+                    });
+
+                    // Booth walls (partial enclosure)
+                    const boothWall1 = new THREE.Mesh(
+                        new THREE.BoxGeometry(0.08, 2.2, 1.8),
+                        boothMat
+                    );
+                    boothWall1.position.set(bp.x - 0.8, -0.9, bp.z);
+                    boothWall1.castShadow = true;
+                    group.add(boothWall1);
+
+                    const boothWall2 = new THREE.Mesh(
+                        new THREE.BoxGeometry(1.6, 2.2, 0.08),
+                        boothMat
+                    );
+                    boothWall2.position.set(bp.x, -0.9, bp.z - 0.9);
+                    boothWall2.castShadow = true;
+                    group.add(boothWall2);
+
+                    // Booth ceiling
+                    const boothCeiling = new THREE.Mesh(
+                        new THREE.BoxGeometry(1.7, 0.08, 1.9),
+                        boothMat
+                    );
+                    boothCeiling.position.set(bp.x, 0.2, bp.z);
+                    group.add(boothCeiling);
+
+                    // Sound-absorbing panels inside
+                    const panelMat = new THREE.MeshStandardMaterial({
+                        color: 0x2d4a3d,
+                        roughness: 0.9
+                    });
+                    const panel = new THREE.Mesh(
+                        new THREE.BoxGeometry(1.4, 1.8, 0.05),
+                        panelMat
+                    );
+                    panel.position.set(bp.x, -0.9, bp.z + 0.85);
+                    group.add(panel);
+
+                    // Small desk in booth
+                    const bDesk = new THREE.Mesh(
+                        new THREE.BoxGeometry(0.8, 0.04, 0.4),
+                        deskMat.clone()
+                    );
+                    bDesk.position.set(bp.x, -1.5, bp.z + 0.3);
+                    group.add(bDesk);
+
+                    // Bar stool in booth
+                    const stoolSeat = new THREE.Mesh(
+                        new THREE.CylinderGeometry(0.18, 0.15, 0.04, 12),
+                        chairMat.clone()
+                    );
+                    stoolSeat.position.set(bp.x, -1.7, bp.z + 0.7);
+                    group.add(stoolSeat);
+
+                    const stoolLeg = new THREE.Mesh(
+                        new THREE.CylinderGeometry(0.03, 0.03, 0.7, 8),
+                        deskLegMat
+                    );
+                    stoolLeg.position.set(bp.x, -2.05, bp.z + 0.7);
+                    group.add(stoolLeg);
+
+                    const stoolBase = new THREE.Mesh(
+                        new THREE.CylinderGeometry(0.15, 0.15, 0.02, 12),
+                        deskLegMat
+                    );
+                    stoolBase.position.set(bp.x, -2.38, bp.z + 0.7);
+                    group.add(stoolBase);
+                });
+
+                // === PANTRY AREA ===
+                const pantryX = 5;
+                const pantryZ = 4;
+
+                // Pantry counter
+                const counterMat = new THREE.MeshStandardMaterial({ color: 0x4a4a4a, roughness: 0.3, metalness: 0.4 });
+                const counter = new THREE.Mesh(
+                    new THREE.BoxGeometry(3, 0.9, 0.6),
+                    counterMat
+                );
+                counter.position.set(pantryX, -1.55, pantryZ);
+                counter.castShadow = true;
+                group.add(counter);
+
+                // Counter top
+                const counterTop = new THREE.Mesh(
+                    new THREE.BoxGeometry(3.1, 0.05, 0.7),
+                    new THREE.MeshStandardMaterial({ color: 0x2a2a2a, roughness: 0.2, metalness: 0.6 })
+                );
+                counterTop.position.set(pantryX, -1.07, pantryZ);
+                group.add(counterTop);
+
+                // Coffee machine
+                const coffeeMachine = new THREE.Mesh(
+                    new THREE.BoxGeometry(0.25, 0.35, 0.25),
+                    new THREE.MeshStandardMaterial({ color: 0x1a1a1a, roughness: 0.3, metalness: 0.7 })
+                );
+                coffeeMachine.position.set(pantryX - 0.8, -0.82, pantryZ);
+                group.add(coffeeMachine);
+
+                // Coffee machine display
+                const coffeeDisplay = new THREE.Mesh(
+                    new THREE.BoxGeometry(0.15, 0.08, 0.02),
+                    new THREE.MeshStandardMaterial({
+                        color: 0x00ff00,
+                        emissive: 0x00ff00,
+                        emissiveIntensity: 0.5
+                    })
+                );
+                coffeeDisplay.position.set(pantryX - 0.8, -0.72, pantryZ + 0.13);
+                group.add(coffeeDisplay);
+
+                // Sink
+                const sink = new THREE.Mesh(
+                    new THREE.BoxGeometry(0.4, 0.12, 0.3),
+                    new THREE.MeshStandardMaterial({ color: 0xcccccc, roughness: 0.2, metalness: 0.8 })
+                );
+                sink.position.set(pantryX - 0.2, -1.0, pantryZ);
+                group.add(sink);
+
+                // Fridge
+                const fridge = new THREE.Mesh(
+                    new THREE.BoxGeometry(0.7, 1.5, 0.6),
+                    new THREE.MeshStandardMaterial({ color: 0x3a3a3a, roughness: 0.3, metalness: 0.5 })
+                );
+                fridge.position.set(pantryX + 1, -0.75, pantryZ);
+                fridge.castShadow = true;
+                group.add(fridge);
+
+                // Microwave
+                const microwave = new THREE.Mesh(
+                    new THREE.BoxGeometry(0.45, 0.28, 0.35),
+                    new THREE.MeshStandardMaterial({ color: 0x2a2a2a, roughness: 0.4, metalness: 0.4 })
+                );
+                microwave.position.set(pantryX + 0.4, -0.9, pantryZ);
+                group.add(microwave);
+
+                // Water dispenser
+                const waterDispenser = new THREE.Mesh(
+                    new THREE.BoxGeometry(0.3, 1.1, 0.3),
+                    new THREE.MeshStandardMaterial({ color: 0xffffff, roughness: 0.3, metalness: 0.3 })
+                );
+                waterDispenser.position.set(pantryX - 1.2, -0.95, pantryZ);
+                group.add(waterDispenser);
+
+                // Pantry shelves
+                for (let sh = 0; sh < 3; sh++) {
+                    const shelf = new THREE.Mesh(
+                        new THREE.BoxGeometry(1.5, 0.03, 0.3),
+                        new THREE.MeshStandardMaterial({ color: 0x3a3a3a, roughness: 0.5, metalness: 0.3 })
+                    );
+                    shelf.position.set(pantryX + 1, -0.2 + sh * 0.5, pantryZ - 0.35);
+                    group.add(shelf);
+                }
+
+                // === FOCUS PODS (2 pods) ===
+                const podPositions = [
+                    { x: -5, z: -5 },
+                    { x: 0, z: -5 }
+                ];
+
+                podPositions.forEach(pp => {
+                    // Oval pod
+                    const podMat = new THREE.MeshStandardMaterial({
+                        color: 0x4a3d2d,
+                        roughness: 0.6,
+                        metalness: 0.2
+                    });
+
+                    const podBase = new THREE.Mesh(
+                        new THREE.CylinderGeometry(1, 1, 0.15, 16),
+                        podMat
+                    );
+                    podBase.position.set(pp.x, -1.93, pp.z);
+                    podBase.castShadow = true;
+                    group.add(podBase);
+
+                    // Pod seat
+                    const podSeat = new THREE.Mesh(
+                        new THREE.BoxGeometry(0.8, 0.3, 0.6),
+                        chairMat.clone()
+                    );
+                    podSeat.position.set(pp.x, -1.65, pp.z);
+                    group.add(podSeat);
+
+                    // Pod back
+                    const podBack = new THREE.Mesh(
+                        new THREE.BoxGeometry(0.8, 0.8, 0.1),
+                        podMat
+                    );
+                    podBack.position.set(pp.x, -1.35, pp.z - 0.3);
+                    group.add(podBack);
+
+                    // Small table in front
+                    const podTable = new THREE.Mesh(
+                        new THREE.BoxGeometry(0.5, 0.35, 0.35),
+                        deskMat.clone()
+                    );
+                    podTable.position.set(pp.x, -1.63, pp.z + 0.6);
+                    group.add(podTable);
+                });
+
+                // === PRINT STATION ===
+                const printX = -7;
+                const printZ = 2;
+
+                // Printer table
+                const printTable = new THREE.Mesh(
+                    new THREE.BoxGeometry(1.2, 0.75, 0.5),
+                    new THREE.MeshStandardMaterial({ color: 0x3a3a3a, roughness: 0.5, metalness: 0.3 })
+                );
+                printTable.position.set(printX, -1.63, printZ);
+                printTable.castShadow = true;
+                group.add(printTable);
+
+                // Printer
+                const printer = new THREE.Mesh(
+                    new THREE.BoxGeometry(0.4, 0.2, 0.35),
+                    new THREE.MeshStandardMaterial({ color: 0x2a2a2a, roughness: 0.3, metalness: 0.4 })
+                );
+                printer.position.set(printX, -1.1, printZ);
+                group.add(printer);
+
+                // Printer paper output
+                const paperStack = new THREE.Mesh(
+                    new THREE.BoxGeometry(0.3, 0.02, 0.25),
+                    whiteMat
+                );
+                paperStack.position.set(printX, -1.18, printZ + 0.15);
+                group.add(paperStack);
+
+                // Bulletin board above print station
+                const board = new THREE.Mesh(
+                    new THREE.BoxGeometry(1, 0.6, 0.03),
+                    new THREE.MeshStandardMaterial({ color: 0x5a4a3a, roughness: 0.8 })
+                );
+                board.position.set(printX, 0.3, printZ - 0.27);
+                group.add(board);
+
+                // Notices on board (colorful papers)
+                for (let n = 0; n < 3; n++) {
+                    const notice = new THREE.Mesh(
+                        new THREE.BoxGeometry(0.15, 0.18, 0.01),
+                        new THREE.MeshStandardMaterial({
+                            color: n === 0 ? 0xffeeaa : (n === 1 ? 0xaaffaa : 0xaaaaff),
+                            roughness: 0.9
+                        })
+                    );
+                    notice.position.set(printX - 0.2 + n * 0.2, 0.3, printZ - 0.24);
+                    group.add(notice);
                 }
 
                 // === IMPROVED MEETING ROOM ===
@@ -483,6 +922,18 @@ export default function ThreeDLanding() {
                 const frameTop = new THREE.Mesh(frameGeo, frameMat);
                 frameTop.position.set(4.5, 0.8, -4.5);
                 group.add(frameTop);
+
+                // Meeting room floor mat
+                const roomMat2 = new THREE.MeshStandardMaterial({
+                    color: 0x2a3530,
+                    roughness: 0.7
+                });
+                const roomFloor = new THREE.Mesh(
+                    new THREE.BoxGeometry(4.3, 0.02, 3.3),
+                    roomMat2
+                );
+                roomFloor.position.set(4.5, -1.89, -4.5);
+                group.add(roomFloor);
 
                 // Meeting table - oval shape approximation
                 const tableGeo = new THREE.CylinderGeometry(1.3, 1.3, 0.08, 24);
@@ -538,6 +989,156 @@ export default function ThreeDLanding() {
                     mBack.rotation.y = -angle;
                     group.add(mBack);
                 }
+
+                // === MEETING ROOM WALL MOUNTED ITEMS ===
+                // TV Screen on wall
+                const tvFrame = new THREE.Mesh(
+                    new THREE.BoxGeometry(1.8, 1.1, 0.08),
+                    new THREE.MeshStandardMaterial({ color: 0x1a1a1a, roughness: 0.3, metalness: 0.5 })
+                );
+                tvFrame.position.set(4.5, -0.3, -6.19);
+                group.add(tvFrame);
+
+                const tvScreen = new THREE.Mesh(
+                    new THREE.BoxGeometry(1.6, 0.95, 0.02),
+                    new THREE.MeshStandardMaterial({
+                        color: 0x111122,
+                        roughness: 0.1,
+                        metalness: 0.8,
+                        emissive: 0x111133,
+                        emissiveIntensity: 0.3
+                    })
+                );
+                tvScreen.position.set(4.5, -0.3, -6.14);
+                group.add(tvScreen);
+
+                // TV mount
+                const tvMount = new THREE.Mesh(
+                    new THREE.BoxGeometry(0.15, 0.6, 0.15),
+                    frameMat
+                );
+                tvMount.position.set(4.5, -0.85, -6.22);
+                group.add(tvMount);
+
+                // Whiteboard
+                const whiteboard = new THREE.Mesh(
+                    new THREE.BoxGeometry(1.5, 1, 0.05),
+                    new THREE.MeshStandardMaterial({ color: 0xffffff, roughness: 0.9 })
+                );
+                whiteboard.position.set(6.7, -0.3, -4.5);
+                group.add(whiteboard);
+
+                // Whiteboard frame
+                const wbFrame = new THREE.Mesh(
+                    new THREE.BoxGeometry(1.55, 1.05, 0.02),
+                    new THREE.MeshStandardMaterial({ color: 0x3a3a3a, roughness: 0.4, metalness: 0.5 })
+                );
+                wbFrame.position.set(6.7, -0.3, -4.47);
+                group.add(wbFrame);
+
+                // Whiteboard markers tray
+                const wbTray = new THREE.Mesh(
+                    new THREE.BoxGeometry(1.2, 0.03, 0.08),
+                    new THREE.MeshStandardMaterial({ color: 0x3a3a3a, roughness: 0.4, metalness: 0.5 })
+                );
+                wbTray.position.set(6.7, -0.82, -4.47);
+                group.add(wbTray);
+
+                // Markers on tray
+                const markerColors = [0xff0000, 0x0000ff, 0x00ff00, 0x000000];
+                for (let m = 0; m < 4; m++) {
+                    const marker = new THREE.Mesh(
+                        new THREE.CylinderGeometry(0.012, 0.012, 0.12, 8),
+                        new THREE.MeshStandardMaterial({ color: markerColors[m], roughness: 0.5 })
+                    );
+                    marker.rotation.z = Math.PI / 2;
+                    marker.position.set(6.7 - 0.4 + m * 0.25, -0.78, -4.45);
+                    group.add(marker);
+                }
+
+                // Conference phone on table
+                const confPhone = new THREE.Mesh(
+                    new THREE.CylinderGeometry(0.08, 0.1, 0.04, 16),
+                    new THREE.MeshStandardMaterial({ color: 0x1a1a1a, roughness: 0.3, metalness: 0.6 })
+                );
+                confPhone.position.set(4.5, -1.14, -4.5);
+                group.add(confPhone);
+
+                // Phone buttons (small circles)
+                for (let pb = 0; pb < 5; pb++) {
+                    const btn = new THREE.Mesh(
+                        new THREE.CircleGeometry(0.015, 8),
+                        new THREE.MeshStandardMaterial({ color: 0x333333, roughness: 0.5 })
+                    );
+                    btn.position.set(4.5 + Math.cos(pb * 0.8 - 0.4) * 0.05, -1.12, -4.5 + Math.sin(pb * 0.8 - 0.4) * 0.05);
+                    group.add(btn);
+                }
+
+                // === SECOND MEETING ROOM (smaller) ===
+                const room2X = -5;
+                const room2Z = -5;
+
+                // Small meeting room glass
+                const room2Mat = new THREE.MeshPhysicalMaterial({
+                    color: 0xaaddff,
+                    metalness: 0.05,
+                    roughness: 0.05,
+                    transmission: 0.7,
+                    transparent: true,
+                    opacity: 0.2
+                });
+                const meetingRoom2 = new THREE.Mesh(
+                    new THREE.BoxGeometry(3, 2.4, 2.5),
+                    room2Mat
+                );
+                meetingRoom2.position.set(room2X, -0.8, room2Z);
+                group.add(meetingRoom2);
+
+                // Small room table
+                const smallTable = new THREE.Mesh(
+                    new THREE.CylinderGeometry(0.6, 0.6, 0.06, 16),
+                    tableMat
+                );
+                smallTable.position.set(room2X, -1.35, room2Z);
+                smallTable.castShadow = true;
+                group.add(smallTable);
+
+                // Small table leg
+                const smallLeg = new THREE.Mesh(
+                    new THREE.CylinderGeometry(0.04, 0.06, 1.3, 8),
+                    frameMat
+                );
+                smallLeg.position.set(room2X, -2, room2Z);
+                group.add(smallLeg);
+
+                // Small room chairs (4)
+                for (let sc = 0; sc < 4; sc++) {
+                    const sAngle = (sc / 4) * Math.PI * 2;
+                    const sChair = new THREE.Mesh(
+                        new THREE.BoxGeometry(0.4, 0.07, 0.4),
+                        chairMat.clone()
+                    );
+                    sChair.position.set(
+                        room2X + Math.cos(sAngle) * 0.9,
+                        -1.75,
+                        room2Z + Math.sin(sAngle) * 0.9
+                    );
+                    sChair.rotation.y = -sAngle;
+                    group.add(sChair);
+                }
+
+                // TV in small room
+                const smallTv = new THREE.Mesh(
+                    new THREE.BoxGeometry(1, 0.6, 0.05),
+                    new THREE.MeshStandardMaterial({
+                        color: 0x111111,
+                        roughness: 0.1,
+                        emissive: 0x111122,
+                        emissiveIntensity: 0.2
+                    })
+                );
+                smallTv.position.set(room2X + 1.55, -0.5, room2Z);
+                group.add(smallTv);
 
                 // === PRIVATE CABINS ===
                 const cabinPositions = [
@@ -650,6 +1251,21 @@ export default function ThreeDLanding() {
                 counterTop.position.set(0, -0.88, -5.5);
                 group.add(counterTop);
 
+                // Reception computer
+                const receptionMonitor = new THREE.Mesh(
+                    new THREE.BoxGeometry(0.5, 0.35, 0.04),
+                    new THREE.MeshStandardMaterial({ color: 0x1a1a1a, roughness: 0.2, metalness: 0.8 })
+                );
+                receptionMonitor.position.set(-1.5, -0.5, -4.9);
+                group.add(receptionMonitor);
+
+                const receptionKeyboard = new THREE.Mesh(
+                    new THREE.BoxGeometry(0.4, 0.02, 0.12),
+                    new THREE.MeshStandardMaterial({ color: 0x2a2a2a, roughness: 0.5 })
+                );
+                receptionKeyboard.position.set(-1.5, -0.82, -4.8);
+                group.add(receptionKeyboard);
+
                 // Logo area with glow
                 const logoMat = new THREE.MeshStandardMaterial({
                     color: accentColor,
@@ -672,7 +1288,28 @@ export default function ThreeDLanding() {
                 backWall.position.set(0, -0.5, -6.9);
                 group.add(backWall);
 
-                // Waiting area sofas
+                // Wall art pieces
+                const artColors = [0xc17f59, 0x4ecdc4, 0xe8a87c];
+                for (let a = 0; a < 3; a++) {
+                    const artFrame = new THREE.Mesh(
+                        new THREE.BoxGeometry(1.2 + a * 0.3, 0.9 + a * 0.2, 0.05),
+                        new THREE.MeshStandardMaterial({ color: 0x3a3a3a, roughness: 0.5 })
+                    );
+                    artFrame.position.set(-4 + a * 4, 0.5, -6.85);
+                    group.add(artFrame);
+
+                    const artCanvas = new THREE.Mesh(
+                        new THREE.BoxGeometry(1 + a * 0.25, 0.7 + a * 0.15, 0.02),
+                        new THREE.MeshStandardMaterial({
+                            color: artColors[a],
+                            roughness: 0.9
+                        })
+                    );
+                    artCanvas.position.set(-4 + a * 4, 0.5, -6.82);
+                    group.add(artCanvas);
+                }
+
+                // Waiting area sofas (L-shaped)
                 const sofaMat = new THREE.MeshStandardMaterial({ color: 0x4a4a4a, roughness: 0.7 });
                 const sofaBase = new THREE.Mesh(
                     new THREE.BoxGeometry(2.5, 0.35, 0.9),
@@ -689,6 +1326,25 @@ export default function ThreeDLanding() {
                 sofaBack.position.set(-2.5, -1.35, -2.38);
                 group.add(sofaBack);
 
+                // L-shaped extension
+                const sofaExt = new THREE.Mesh(
+                    new THREE.BoxGeometry(0.9, 0.35, 1.5),
+                    sofaMat
+                );
+                sofaExt.position.set(-3.55, -1.63, -2.8);
+                sofaExt.castShadow = true;
+                group.add(sofaExt);
+
+                // Sofa cushions
+                for (let c = 0; c < 3; c++) {
+                    const cushion = new THREE.Mesh(
+                        new THREE.BoxGeometry(0.7, 0.12, 0.5),
+                        new THREE.MeshStandardMaterial({ color: 0x5a5a5a, roughness: 0.8 })
+                    );
+                    cushion.position.set(-2.5 + c * 0.8, -1.32, -2);
+                    group.add(cushion);
+                }
+
                 // Coffee table
                 const coffeeTable = new THREE.Mesh(
                     new THREE.BoxGeometry(1.2, 0.4, 0.6),
@@ -697,6 +1353,20 @@ export default function ThreeDLanding() {
                 coffeeTable.position.set(-2.5, -1.6, -1);
                 coffeeTable.castShadow = true;
                 group.add(coffeeTable);
+
+                // Magazines on table
+                for (let g = 0; g < 3; g++) {
+                    const magazine = new THREE.Mesh(
+                        new THREE.BoxGeometry(0.2, 0.02, 0.28),
+                        new THREE.MeshStandardMaterial({
+                            color: g === 0 ? 0xcc3333 : (g === 1 ? 0x3333cc : 0x33cc33),
+                            roughness: 0.9
+                        })
+                    );
+                    magazine.position.set(-2.6 + g * 0.15, -1.38, -1 + g * 0.08);
+                    magazine.rotation.y = g * 0.2;
+                    group.add(magazine);
+                }
 
                 // Side tables
                 const sideTableMat = new THREE.MeshStandardMaterial({ color: 0x2a2a2a, roughness: 0.3, metalness: 0.5 });
@@ -708,11 +1378,165 @@ export default function ThreeDLanding() {
                     sideTable.position.set(-2.5 + offset * 2, -1.55, -2.8);
                     sideTable.castShadow = true;
                     group.add(sideTable);
+
+                    // Table lamp
+                    const lampBase = new THREE.Mesh(
+                        new THREE.CylinderGeometry(0.06, 0.08, 0.03, 12),
+                        sideTableMat
+                    );
+                    lampBase.position.set(-2.5 + offset * 2, -1.28, -2.8);
+                    group.add(lampBase);
+
+                    const lampPole = new THREE.Mesh(
+                        new THREE.CylinderGeometry(0.015, 0.015, 0.2, 8),
+                        new THREE.MeshStandardMaterial({ color: 0x666666, roughness: 0.3, metalness: 0.7 })
+                    );
+                    lampPole.position.set(-2.5 + offset * 2, -1.18, -2.8);
+                    group.add(lampPole);
+
+                    const lampShade = new THREE.Mesh(
+                        new THREE.CylinderGeometry(0.08, 0.12, 0.15, 12, 1, true),
+                        new THREE.MeshStandardMaterial({
+                            color: 0xfff5e6,
+                            emissive: 0xfff5e6,
+                            emissiveIntensity: 0.3,
+                            transparent: true,
+                            opacity: 0.9,
+                            side: THREE.DoubleSide
+                        })
+                    );
+                    lampShade.position.set(-2.5 + offset * 2, -1.08, -2.8);
+                    group.add(lampShade);
                 });
+
+                // === LIFT/ELEVATOR AREA ===
+                const liftX = 5;
+                const liftZ = -5;
+
+                // Lift doors
+                const liftDoor = new THREE.Mesh(
+                    new THREE.BoxGeometry(1.5, 2.5, 0.1),
+                    new THREE.MeshStandardMaterial({ color: 0x4a4a4a, roughness: 0.3, metalness: 0.6 })
+                );
+                liftDoor.position.set(liftX, -0.25, liftZ);
+                group.add(liftDoor);
+
+                // Lift frame
+                const liftFrame = new THREE.Mesh(
+                    new THREE.BoxGeometry(1.7, 2.7, 0.08),
+                    new THREE.MeshStandardMaterial({ color: 0x3a3a3a, roughness: 0.4, metalness: 0.5 })
+                );
+                liftFrame.position.set(liftX, -0.25, liftZ - 0.06);
+                group.add(liftFrame);
+
+                // Lift button panel
+                const liftPanel = new THREE.Mesh(
+                    new THREE.BoxGeometry(0.15, 0.6, 0.05),
+                    new THREE.MeshStandardMaterial({ color: 0x2a2a2a, roughness: 0.3, metalness: 0.7 })
+                );
+                liftPanel.position.set(liftX - 0.6, -0.5, liftZ - 0.08);
+                group.add(liftPanel);
+
+                // Lift buttons
+                for (let lb = 0; lb < 6; lb++) {
+                    const btn = new THREE.Mesh(
+                        new THREE.CylinderGeometry(0.025, 0.025, 0.01, 12),
+                        new THREE.MeshStandardMaterial({
+                            color: lb === 0 ? 0x00ff00 : 0x666666,
+                            emissive: lb === 0 ? 0x00ff00 : 0x000000,
+                            emissiveIntensity: 0.3
+                        })
+                    );
+                    btn.rotation.x = Math.PI / 2;
+                    btn.position.set(liftX - 0.6, -0.2 + lb * 0.08, liftZ - 0.05);
+                    group.add(btn);
+                }
+
+                // === INFO KIOSK ===
+                const kioskX = 3;
+                const kioskZ = 0;
+
+                const kiosk = new THREE.Mesh(
+                    new THREE.BoxGeometry(0.8, 1.5, 0.4),
+                    new THREE.MeshStandardMaterial({ color: 0x2a2a2a, roughness: 0.3, metalness: 0.5 })
+                );
+                kiosk.position.set(kioskX, -1.25, kioskZ);
+                kiosk.castShadow = true;
+                group.add(kiosk);
+
+                // Kiosk screen
+                const kioskScreen = new THREE.Mesh(
+                    new THREE.BoxGeometry(0.5, 0.7, 0.02),
+                    new THREE.MeshStandardMaterial({
+                        color: 0x111133,
+                        emissive: 0x111155,
+                        emissiveIntensity: 0.5
+                    })
+                );
+                kioskScreen.position.set(kioskX, -0.8, kioskZ + 0.21);
+                group.add(kioskScreen);
+
+                // === SECURITY GATE ===
+                const gateX = 0;
+                const gateZ = 2;
+
+                // Gate frame
+                const gateFrame = new THREE.Mesh(
+                    new THREE.BoxGeometry(4, 2.8, 0.15),
+                    new THREE.MeshStandardMaterial({ color: 0x3a3a40, roughness: 0.5, metalness: 0.4 })
+                );
+                gateFrame.position.set(gateX, -0.6, gateZ);
+                group.add(gateFrame);
+
+                // Gate barriers
+                const gateMat = new THREE.MeshStandardMaterial({ color: 0x5a5a60, roughness: 0.4, metalness: 0.5 });
+                for (let gb = 0; gb < 8; gb++) {
+                    const gateBar = new THREE.Mesh(
+                        new THREE.BoxGeometry(0.03, 2.5, 0.03),
+                        gateMat
+                    );
+                    gateBar.position.set(gateX - 1.5 + gb * 0.43, -0.65, gateZ);
+                    group.add(gateBar);
+                }
+
+                // Floor carpet in lobby
+                const carpetMat = new THREE.MeshStandardMaterial({ color: 0x4a3d2d, roughness: 0.9 });
+                const carpet = new THREE.Mesh(
+                    new THREE.BoxGeometry(10, 0.02, 8),
+                    carpetMat
+                );
+                carpet.position.set(0, -1.89, -1);
+                group.add(carpet);
+
+                // Large potted plants in lobby
+                const lobbyPlantPot = new THREE.Mesh(
+                    new THREE.CylinderGeometry(0.5, 0.4, 0.8, 12),
+                    new THREE.MeshStandardMaterial({ color: 0x5a4a3a, roughness: 0.6 })
+                );
+                lobbyPlantPot.position.set(-6, -1.6, 2);
+                lobbyPlantPot.castShadow = true;
+                group.add(lobbyPlantPot);
+
+                const lobbyPlant = new THREE.Mesh(
+                    new THREE.ConeGeometry(0.6, 1.5, 8),
+                    new THREE.MeshStandardMaterial({ color: 0x2d5a3d, roughness: 0.7 })
+                );
+                lobbyPlant.position.set(-6, -0.9, 2);
+                lobbyPlant.castShadow = true;
+                group.add(lobbyPlant);
+
+                const lobbyPlantPot2 = lobbyPlantPot.clone();
+                lobbyPlantPot2.position.set(6, -1.6, 2);
+                group.add(lobbyPlantPot2);
+
+                const lobbyPlant2 = lobbyPlant.clone();
+                lobbyPlant2.position.set(6, -0.9, 2);
+                group.add(lobbyPlant2);
             }
 
             // === CEILING LIGHTING ===
-            const lightGeo = new THREE.BoxGeometry(1.2, 0.08, 0.25);
+            // Main linear lights
+            const lightGeo = new THREE.BoxGeometry(1.5, 0.08, 0.3);
             const lightMat = new THREE.MeshStandardMaterial({
                 color: 0xffffff,
                 emissive: 0xfff5e6,
@@ -722,7 +1546,68 @@ export default function ThreeDLanding() {
                 const ceilingLight = new THREE.Mesh(lightGeo, lightMat.clone());
                 ceilingLight.position.set(-5 + l * 3.5, floorHeight / 2 - 0.1, 0);
                 group.add(ceilingLight);
+
+                // Light housing
+                const lightHousing = new THREE.Mesh(
+                    new THREE.BoxGeometry(1.6, 0.12, 0.4),
+                    new THREE.MeshStandardMaterial({ color: 0x3a3a3a, roughness: 0.4, metalness: 0.5 })
+                );
+                lightHousing.position.set(-5 + l * 3.5, floorHeight / 2 - 0.05, 0);
+                group.add(lightHousing);
             }
+
+            // === WALL SCONCES ===
+            const sconceMat = new THREE.MeshStandardMaterial({ color: 0x4a4a4a, roughness: 0.3, metalness: 0.6 });
+            const sconcePositions = [
+                { x: -8.3, z: 0 },
+                { x: 8.3, z: 0 }
+            ];
+            sconcePositions.forEach(sp => {
+                const sconce = new THREE.Mesh(
+                    new THREE.BoxGeometry(0.15, 0.4, 0.2),
+                    sconceMat
+                );
+                sconce.position.set(sp.x, 0.5, sp.z);
+                group.add(sconce);
+
+                const sconceLight = new THREE.Mesh(
+                    new THREE.BoxGeometry(0.08, 0.25, 0.05),
+                    new THREE.MeshStandardMaterial({
+                        color: 0xfff5e6,
+                        emissive: 0xfff5e6,
+                        emissiveIntensity: 0.8
+                    })
+                );
+                sconceLight.position.set(sp.x + (sp.x > 0 ? -0.08 : 0.08), 0.5, sp.z);
+                group.add(sconceLight);
+            });
+
+            // === AIR VENTS ===
+            const ventMat = new THREE.MeshStandardMaterial({ color: 0x5a5a5a, roughness: 0.5, metalness: 0.3 });
+            const ventPositions = [
+                { x: -7, z: 5 },
+                { x: 7, z: 5 },
+                { x: -7, z: -5 },
+                { x: 7, z: -5 }
+            ];
+            ventPositions.forEach(vp => {
+                const vent = new THREE.Mesh(
+                    new THREE.BoxGeometry(0.8, 0.08, 0.4),
+                    ventMat
+                );
+                vent.position.set(vp.x, floorHeight / 2 - 0.1, vp.z);
+                group.add(vent);
+
+                // Vent slats
+                for (let slat = 0; slat < 5; slat++) {
+                    const slatMesh = new THREE.Mesh(
+                        new THREE.BoxGeometry(0.7, 0.015, 0.02),
+                        new THREE.MeshStandardMaterial({ color: 0x3a3a3a, roughness: 0.4, metalness: 0.4 })
+                    );
+                    slatMesh.position.set(vp.x, floorHeight / 2 - 0.12, vp.z - 0.15 + slat * 0.08);
+                    group.add(slatMesh);
+                }
+            });
 
             group.position.y = i * floorHeight + floorHeight / 2;
             floors.push(group);
