@@ -1,0 +1,1438 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WORK TABLE — A Coworking Community | County Spaces</title>
+    <meta name="description" content="Premium coworking spaces at Sector-135, Noida. 816 seats across 9 floors with world-class amenities.">
+
+    <!-- Fonts -->
+    <link rel="stylesheet" href="https://api.fontshare.com/v2/css?f[]=clash-display@400,500,600,700&f[]=satoshi@400,500,700&display=swap">
+
+    <style>
+        /* ===========================================
+           CSS CUSTOM PROPERTIES (THEME)
+           WORK TABLE brand: Dark Charcoal + Copper/Rose Gold
+           =========================================== */
+        :root {
+            --bg-primary: #0f0f0f;
+            --bg-secondary: #1a1a1a;
+            --bg-card: #222222;
+            --bg-card-hover: #2a2a2a;
+            --text-primary: #ffffff;
+            --text-secondary: #a0a0a0;
+            --text-muted: #666666;
+            --accent: #c17f59;
+            --accent-light: #e8a87c;
+            --accent-glow: rgba(193, 127, 89, 0.25);
+            --accent-dark: #8a5a3e;
+            --copper-gradient: linear-gradient(135deg, #c17f59, #e8a87c);
+            --dark-gradient: linear-gradient(180deg, #0f0f0f 0%, #1a1a1a 100%);
+            --font-display: 'Clash Display', sans-serif;
+            --font-body: 'Satoshi', sans-serif;
+            --slide-padding: clamp(2rem, 5vw, 5rem);
+            --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
+            --ease-out-back: cubic-bezier(0.34, 1.56, 0.64, 1);
+            --duration-normal: 0.7s;
+            --duration-slow: 1.2s;
+        }
+
+        /* ===========================================
+           BASE RESET
+           =========================================== */
+        *, *::before, *::after {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html {
+            scroll-behavior: smooth;
+            scroll-snap-type: y mandatory;
+            overflow-x: hidden;
+        }
+
+        body {
+            font-family: var(--font-body);
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            overflow-x: hidden;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+        }
+
+        img {
+            max-width: 100%;
+            height: auto;
+            display: block;
+        }
+
+        /* ===========================================
+           PROGRESS BAR
+           Tracks scroll position across all slides
+           =========================================== */
+        .progress-bar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            height: 3px;
+            background: var(--copper-gradient);
+            z-index: 1000;
+            transition: width 0.3s ease;
+            box-shadow: 0 0 10px var(--accent-glow);
+        }
+
+        /* ===========================================
+           NAVIGATION DOTS
+           Fixed right-side dot navigation
+           =========================================== */
+        .nav-dots {
+            position: fixed;
+            right: 1.5rem;
+            top: 50%;
+            transform: translateY(-50%);
+            z-index: 100;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .nav-dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background: rgba(255,255,255,0.15);
+            border: 1px solid rgba(255,255,255,0.2);
+            cursor: pointer;
+            transition: all 0.4s var(--ease-out-expo);
+            position: relative;
+        }
+
+        .nav-dot::after {
+            content: attr(data-label);
+            position: absolute;
+            right: 20px;
+            top: 50%;
+            transform: translateY(-50%);
+            white-space: nowrap;
+            font-size: 0.7rem;
+            color: var(--text-secondary);
+            opacity: 0;
+            transition: opacity 0.3s;
+            font-family: var(--font-body);
+            letter-spacing: 0.05em;
+        }
+
+        .nav-dot:hover::after { opacity: 1; }
+
+        .nav-dot.active {
+            background: var(--accent);
+            border-color: var(--accent);
+            transform: scale(1.3);
+            box-shadow: 0 0 12px var(--accent-glow);
+        }
+
+        /* ===========================================
+           SLIDE CONTAINER
+           Each section = one full-viewport slide
+           =========================================== */
+        .slide {
+            min-height: 100vh;
+            padding: var(--slide-padding);
+            scroll-snap-align: start;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        /* ===========================================
+           ANIMATIONS — scroll-triggered via .visible
+           =========================================== */
+        .reveal {
+            opacity: 0;
+            transform: translateY(40px);
+            transition: opacity var(--duration-normal) var(--ease-out-expo),
+                        transform var(--duration-normal) var(--ease-out-expo);
+        }
+
+        .reveal-left {
+            opacity: 0;
+            transform: translateX(-50px);
+            transition: opacity var(--duration-normal) var(--ease-out-expo),
+                        transform var(--duration-normal) var(--ease-out-expo);
+        }
+
+        .reveal-right {
+            opacity: 0;
+            transform: translateX(50px);
+            transition: opacity var(--duration-normal) var(--ease-out-expo),
+                        transform var(--duration-normal) var(--ease-out-expo);
+        }
+
+        .reveal-scale {
+            opacity: 0;
+            transform: scale(0.85);
+            transition: opacity var(--duration-slow) var(--ease-out-expo),
+                        transform var(--duration-slow) var(--ease-out-expo);
+        }
+
+        .slide.visible .reveal,
+        .slide.visible .reveal-left,
+        .slide.visible .reveal-right,
+        .slide.visible .reveal-scale {
+            opacity: 1;
+            transform: translateY(0) translateX(0) scale(1);
+        }
+
+        /* Staggered delays */
+        .delay-1 { transition-delay: 0.1s; }
+        .delay-2 { transition-delay: 0.2s; }
+        .delay-3 { transition-delay: 0.35s; }
+        .delay-4 { transition-delay: 0.5s; }
+        .delay-5 { transition-delay: 0.65s; }
+        .delay-6 { transition-delay: 0.8s; }
+
+        /* ===========================================
+           TYPOGRAPHY
+           =========================================== */
+        .slide-label {
+            font-family: var(--font-body);
+            font-size: 0.75rem;
+            font-weight: 500;
+            letter-spacing: 0.2em;
+            text-transform: uppercase;
+            color: var(--accent);
+            margin-bottom: 1rem;
+        }
+
+        .slide-title {
+            font-family: var(--font-display);
+            font-size: clamp(2rem, 5vw, 3.5rem);
+            font-weight: 600;
+            line-height: 1.1;
+            margin-bottom: 1.5rem;
+        }
+
+        .slide-subtitle {
+            font-size: clamp(1rem, 2vw, 1.25rem);
+            color: var(--text-secondary);
+            line-height: 1.6;
+            max-width: 600px;
+        }
+
+        .accent-text {
+            color: var(--accent);
+        }
+
+        .gradient-text {
+            background: var(--copper-gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        /* ===========================================
+           DECORATIVE ELEMENTS
+           =========================================== */
+        .copper-line {
+            width: 60px;
+            height: 2px;
+            background: var(--copper-gradient);
+            margin-bottom: 1.5rem;
+        }
+
+        .grid-bg {
+            background-image:
+                linear-gradient(rgba(255,255,255,0.015) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(255,255,255,0.015) 1px, transparent 1px);
+            background-size: 60px 60px;
+        }
+
+        .gradient-mesh {
+            background:
+                radial-gradient(ellipse at 20% 80%, rgba(193, 127, 89, 0.08) 0%, transparent 50%),
+                radial-gradient(ellipse at 80% 20%, rgba(232, 168, 124, 0.05) 0%, transparent 50%),
+                var(--bg-primary);
+        }
+
+        /* ===========================================
+           SLIDE 1: HERO
+           =========================================== */
+        .hero-slide {
+            text-align: center;
+            align-items: center;
+            background:
+                radial-gradient(ellipse at center bottom, rgba(193, 127, 89, 0.1) 0%, transparent 60%),
+                var(--bg-primary);
+        }
+
+        .hero-logo {
+            width: clamp(200px, 35vw, 400px);
+            margin-bottom: 2rem;
+            filter: drop-shadow(0 0 30px rgba(193, 127, 89, 0.15));
+        }
+
+        .hero-tagline {
+            font-family: var(--font-body);
+            font-size: clamp(0.9rem, 1.5vw, 1.1rem);
+            letter-spacing: 0.3em;
+            text-transform: uppercase;
+            color: var(--text-secondary);
+            margin-top: 1rem;
+        }
+
+        .hero-divider {
+            width: 100px;
+            height: 1px;
+            background: var(--copper-gradient);
+            margin: 2rem auto;
+        }
+
+        .hero-location {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            letter-spacing: 0.1em;
+        }
+
+        .scroll-hint {
+            position: absolute;
+            bottom: 2rem;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 8px;
+            color: var(--text-muted);
+            font-size: 0.7rem;
+            letter-spacing: 0.15em;
+            text-transform: uppercase;
+            animation: float 2s ease-in-out infinite;
+        }
+
+        .scroll-hint .arrow {
+            width: 20px;
+            height: 20px;
+            border-right: 1.5px solid var(--accent);
+            border-bottom: 1.5px solid var(--accent);
+            transform: rotate(45deg);
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateX(-50%) translateY(0); }
+            50% { transform: translateX(-50%) translateY(8px); }
+        }
+
+        /* ===========================================
+           SLIDE 2: LOCATION
+           =========================================== */
+        .location-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 2rem;
+            margin-top: 2rem;
+            max-width: 900px;
+        }
+
+        .location-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 1rem;
+            padding: 1.2rem;
+            border: 1px solid rgba(255,255,255,0.06);
+            border-radius: 12px;
+            background: rgba(255,255,255,0.02);
+            transition: border-color 0.3s, background 0.3s;
+        }
+
+        .location-item:hover {
+            border-color: var(--accent-glow);
+            background: rgba(193, 127, 89, 0.03);
+        }
+
+        .location-icon {
+            font-size: 1.5rem;
+            flex-shrink: 0;
+        }
+
+        .location-item h4 {
+            font-family: var(--font-display);
+            font-size: 0.95rem;
+            font-weight: 500;
+            margin-bottom: 0.3rem;
+        }
+
+        .location-item p {
+            font-size: 0.82rem;
+            color: var(--text-secondary);
+            line-height: 1.5;
+        }
+
+        /* ===========================================
+           SLIDE 3: BUILDING STATS
+           =========================================== */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 1.5rem;
+            margin-top: 2.5rem;
+            max-width: 900px;
+        }
+
+        .stat-card {
+            text-align: center;
+            padding: 2rem 1rem;
+            border: 1px solid rgba(255,255,255,0.06);
+            border-radius: 16px;
+            background: rgba(255,255,255,0.02);
+            transition: all 0.4s var(--ease-out-expo);
+        }
+
+        .stat-card:hover {
+            border-color: var(--accent);
+            transform: translateY(-4px);
+            box-shadow: 0 8px 30px rgba(193, 127, 89, 0.1);
+        }
+
+        .stat-number {
+            font-family: var(--font-display);
+            font-size: clamp(2rem, 4vw, 3rem);
+            font-weight: 700;
+            background: var(--copper-gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .stat-label {
+            font-size: 0.78rem;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            margin-top: 0.5rem;
+        }
+
+        .stat-unit {
+            font-size: 0.7rem;
+            color: var(--text-muted);
+            margin-top: 0.3rem;
+        }
+
+        /* ===========================================
+           SLIDE 4: FLOOR PLAN
+           =========================================== */
+        .floor-plan-container {
+            max-width: 1000px;
+            margin: 2rem auto 0;
+            position: relative;
+        }
+
+        .floor-plan-img {
+            width: 100%;
+            border-radius: 12px;
+            border: 1px solid rgba(255,255,255,0.08);
+            box-shadow: 0 20px 60px rgba(0,0,0,0.4);
+        }
+
+        .floor-plan-legend {
+            display: flex;
+            justify-content: center;
+            gap: 2rem;
+            margin-top: 1.5rem;
+            flex-wrap: wrap;
+        }
+
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 0.8rem;
+            color: var(--text-secondary);
+        }
+
+        .legend-dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 3px;
+        }
+
+        .legend-dot.open { background: #4ECDC4; }
+        .legend-dot.cabin { background: #FFE66D; }
+        .legend-dot.meeting { background: #FF6B6B; }
+        .legend-dot.amenity { background: var(--accent); }
+
+        /* ===========================================
+           SLIDE 5: SPACES GALLERY
+           =========================================== */
+        .gallery-container {
+            width: 100%;
+            max-width: 1100px;
+            margin: 2rem auto 0;
+            position: relative;
+            overflow: hidden;
+            border-radius: 16px;
+        }
+
+        .gallery-track {
+            display: flex;
+            transition: transform 0.8s var(--ease-out-expo);
+        }
+
+        .gallery-item {
+            min-width: 100%;
+            position: relative;
+        }
+
+        .gallery-item img {
+            width: 100%;
+            height: clamp(350px, 50vh, 550px);
+            object-fit: cover;
+            border-radius: 16px;
+        }
+
+        .gallery-label {
+            position: absolute;
+            bottom: 1.5rem;
+            left: 1.5rem;
+            background: rgba(15, 15, 15, 0.85);
+            backdrop-filter: blur(10px);
+            padding: 0.6rem 1.2rem;
+            border-radius: 8px;
+            font-family: var(--font-display);
+            font-size: 0.9rem;
+            font-weight: 500;
+            border: 1px solid rgba(255,255,255,0.1);
+        }
+
+        .gallery-controls {
+            display: flex;
+            justify-content: center;
+            gap: 1rem;
+            margin-top: 1.5rem;
+        }
+
+        .gallery-btn {
+            width: 44px;
+            height: 44px;
+            border-radius: 50%;
+            border: 1px solid rgba(255,255,255,0.15);
+            background: rgba(255,255,255,0.03);
+            color: var(--text-primary);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s;
+            font-size: 1.1rem;
+        }
+
+        .gallery-btn:hover {
+            border-color: var(--accent);
+            background: var(--accent-glow);
+        }
+
+        .gallery-indicators {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .gallery-indicator {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: rgba(255,255,255,0.15);
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .gallery-indicator.active {
+            background: var(--accent);
+            transform: scale(1.3);
+        }
+
+        /* ===========================================
+           SLIDE 6 & 7: FEATURE IMAGE + TEXT
+           =========================================== */
+        .split-slide {
+            flex-direction: row;
+            gap: 3rem;
+            align-items: center;
+        }
+
+        .split-image {
+            flex: 1;
+            border-radius: 16px;
+            overflow: hidden;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+        }
+
+        .split-image img {
+            width: 100%;
+            height: clamp(350px, 50vh, 500px);
+            object-fit: cover;
+            transition: transform 0.8s var(--ease-out-expo);
+        }
+
+        .split-image:hover img {
+            transform: scale(1.03);
+        }
+
+        .split-content {
+            flex: 1;
+            max-width: 450px;
+        }
+
+        .feature-list {
+            list-style: none;
+            margin-top: 1.5rem;
+        }
+
+        .feature-list li {
+            display: flex;
+            align-items: center;
+            gap: 0.8rem;
+            padding: 0.7rem 0;
+            border-bottom: 1px solid rgba(255,255,255,0.04);
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+        }
+
+        .feature-list li::before {
+            content: '◆';
+            color: var(--accent);
+            font-size: 0.5rem;
+            flex-shrink: 0;
+        }
+
+        /* ===========================================
+           SLIDE 7: CONFERENCE (dual image)
+           =========================================== */
+        .dual-image-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1.5rem;
+            margin-top: 2rem;
+            max-width: 1000px;
+        }
+
+        .dual-image-grid img {
+            width: 100%;
+            height: clamp(250px, 35vh, 380px);
+            object-fit: cover;
+            border-radius: 12px;
+            border: 1px solid rgba(255,255,255,0.06);
+            transition: transform 0.5s var(--ease-out-expo), box-shadow 0.5s;
+        }
+
+        .dual-image-grid img:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 12px 40px rgba(0,0,0,0.3);
+        }
+
+        /* ===========================================
+           SLIDE 8: COMMERCIAL TERMS
+           =========================================== */
+        .terms-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 1.2rem;
+            margin-top: 2rem;
+            max-width: 950px;
+        }
+
+        .term-card {
+            padding: 1.5rem;
+            border: 1px solid rgba(255,255,255,0.06);
+            border-radius: 12px;
+            background: rgba(255,255,255,0.02);
+            transition: all 0.3s;
+        }
+
+        .term-card:hover {
+            border-color: rgba(193, 127, 89, 0.3);
+            background: rgba(193, 127, 89, 0.03);
+        }
+
+        .term-card .term-value {
+            font-family: var(--font-display);
+            font-size: 1.4rem;
+            font-weight: 600;
+            color: var(--accent-light);
+            margin-bottom: 0.4rem;
+        }
+
+        .term-card .term-label {
+            font-size: 0.78rem;
+            color: var(--text-secondary);
+            line-height: 1.4;
+        }
+
+        /* ===========================================
+           SLIDE 9: PRICING
+           =========================================== */
+        .pricing-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 1.5rem;
+            margin-top: 2.5rem;
+            max-width: 900px;
+        }
+
+        .pricing-card {
+            padding: 2.5rem 1.5rem;
+            border: 1px solid rgba(255,255,255,0.08);
+            border-radius: 20px;
+            background: rgba(255,255,255,0.02);
+            text-align: center;
+            transition: all 0.4s var(--ease-out-expo);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .pricing-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: var(--copper-gradient);
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+
+        .pricing-card:hover {
+            border-color: var(--accent);
+            transform: translateY(-6px);
+            box-shadow: 0 12px 40px rgba(193, 127, 89, 0.12);
+        }
+
+        .pricing-card:hover::before { opacity: 1; }
+
+        .pricing-card.featured {
+            border-color: var(--accent);
+            background: rgba(193, 127, 89, 0.05);
+        }
+
+        .pricing-card.featured::before { opacity: 1; }
+
+        .pricing-tier {
+            font-family: var(--font-display);
+            font-size: 0.85rem;
+            font-weight: 500;
+            letter-spacing: 0.15em;
+            text-transform: uppercase;
+            color: var(--accent);
+            margin-bottom: 1rem;
+        }
+
+        .pricing-amount {
+            font-family: var(--font-display);
+            font-size: clamp(2.2rem, 4vw, 3rem);
+            font-weight: 700;
+        }
+
+        .pricing-amount .currency {
+            font-size: 0.5em;
+            vertical-align: super;
+            color: var(--text-secondary);
+        }
+
+        .pricing-period {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+            margin-top: 0.3rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .pricing-features {
+            list-style: none;
+            text-align: left;
+        }
+
+        .pricing-features li {
+            padding: 0.5rem 0;
+            font-size: 0.82rem;
+            color: var(--text-secondary);
+            border-bottom: 1px solid rgba(255,255,255,0.03);
+            display: flex;
+            gap: 0.5rem;
+            align-items: center;
+        }
+
+        .pricing-features li::before {
+            content: '✓';
+            color: var(--accent);
+            font-weight: 700;
+            font-size: 0.7rem;
+        }
+
+        /* ===========================================
+           SLIDE 10: CTA / CONTACT
+           =========================================== */
+        .cta-slide {
+            text-align: center;
+            align-items: center;
+            background:
+                radial-gradient(ellipse at center, rgba(193, 127, 89, 0.08) 0%, transparent 60%),
+                var(--bg-primary);
+        }
+
+        .cta-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.8rem;
+            padding: 1rem 2.5rem;
+            border: 2px solid var(--accent);
+            border-radius: 60px;
+            background: transparent;
+            color: var(--text-primary);
+            font-family: var(--font-display);
+            font-size: 1rem;
+            font-weight: 500;
+            letter-spacing: 0.1em;
+            cursor: pointer;
+            transition: all 0.4s var(--ease-out-expo);
+            text-decoration: none;
+            margin-top: 2rem;
+        }
+
+        .cta-btn:hover {
+            background: var(--accent);
+            color: #0f0f0f;
+            transform: scale(1.05);
+            box-shadow: 0 0 30px var(--accent-glow);
+        }
+
+        .contact-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 2rem;
+            margin-top: 3rem;
+            max-width: 700px;
+        }
+
+        .contact-item {
+            text-align: center;
+        }
+
+        .contact-item .icon {
+            font-size: 1.5rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .contact-item h4 {
+            font-family: var(--font-display);
+            font-size: 0.85rem;
+            font-weight: 500;
+            margin-bottom: 0.3rem;
+        }
+
+        .contact-item p {
+            font-size: 0.78rem;
+            color: var(--text-secondary);
+        }
+
+        .footer-brand {
+            margin-top: 3rem;
+            padding-top: 2rem;
+            border-top: 1px solid rgba(255,255,255,0.06);
+            font-size: 0.7rem;
+            color: var(--text-muted);
+            letter-spacing: 0.1em;
+        }
+
+        /* ===========================================
+           KEYBOARD HINT
+           =========================================== */
+        .keyboard-hint {
+            position: fixed;
+            bottom: 1.5rem;
+            left: 1.5rem;
+            font-size: 0.65rem;
+            color: var(--text-muted);
+            letter-spacing: 0.1em;
+            z-index: 50;
+            opacity: 0.5;
+        }
+
+        .keyboard-hint kbd {
+            display: inline-block;
+            padding: 2px 6px;
+            border: 1px solid rgba(255,255,255,0.15);
+            border-radius: 3px;
+            font-family: var(--font-body);
+            font-size: 0.6rem;
+            margin: 0 2px;
+        }
+
+        /* ===========================================
+           REDUCED MOTION
+           =========================================== */
+        @media (prefers-reduced-motion: reduce) {
+            html { scroll-snap-type: none; }
+            .reveal, .reveal-left, .reveal-right, .reveal-scale {
+                transition: opacity 0.3s ease;
+                transform: none;
+            }
+            .scroll-hint { animation: none; }
+        }
+
+        /* ===========================================
+           RESPONSIVE
+           =========================================== */
+        @media (max-width: 900px) {
+            .stats-grid { grid-template-columns: repeat(2, 1fr); }
+            .terms-grid { grid-template-columns: repeat(2, 1fr); }
+            .pricing-grid { grid-template-columns: 1fr; max-width: 350px; }
+            .split-slide { flex-direction: column; }
+            .split-content { max-width: 100%; }
+            .dual-image-grid { grid-template-columns: 1fr; }
+            .location-grid { grid-template-columns: 1fr; }
+            .contact-grid { grid-template-columns: 1fr; }
+        }
+
+        @media (max-width: 600px) {
+            .nav-dots, .keyboard-hint { display: none; }
+            .stats-grid { grid-template-columns: repeat(2, 1fr); gap: 1rem; }
+            .terms-grid { grid-template-columns: 1fr; }
+            .gallery-item img { height: 280px; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Progress Bar -->
+    <div class="progress-bar" id="progressBar"></div>
+
+    <!-- Navigation Dots -->
+    <nav class="nav-dots" id="navDots"></nav>
+
+    <!-- Keyboard Hint -->
+    <div class="keyboard-hint">
+        <kbd>↑</kbd> <kbd>↓</kbd> or <kbd>Space</kbd> to navigate
+    </div>
+
+    <!-- ============================================
+         SLIDE 1: HERO
+         ============================================ -->
+    <section class="slide hero-slide" id="slide-hero" data-label="Home">
+        <img src="./assets/logo.jpeg" alt="WORK TABLE Logo" class="hero-logo reveal delay-1">
+        <div class="hero-divider reveal delay-2"></div>
+        <p class="hero-tagline reveal delay-3">A Coworking Community</p>
+        <p class="hero-location reveal delay-4">Sector-135, Noida · Noida Expressway</p>
+
+        <div class="scroll-hint">
+            <span>Scroll to explore</span>
+            <div class="arrow"></div>
+        </div>
+    </section>
+
+    <!-- ============================================
+         SLIDE 2: LOCATION & CONNECTIVITY
+         ============================================ -->
+    <section class="slide grid-bg" id="slide-location" data-label="Location">
+        <span class="slide-label reveal">Location</span>
+        <h2 class="slide-title reveal delay-1">Strategically <span class="gradient-text">Located</span></h2>
+        <p class="slide-subtitle reveal delay-2">At the heart of Noida's thriving IT &amp; corporate corridor, with unmatched connectivity to the NCR region.</p>
+
+        <div class="location-grid">
+            <div class="location-item reveal delay-2">
+                <span class="location-icon">📍</span>
+                <div>
+                    <h4>Prime Address</h4>
+                    <p>Sector-135, Noida — on the Noida Expressway, surrounded by IT parks and corporate offices</p>
+                </div>
+            </div>
+            <div class="location-item reveal delay-3">
+                <span class="location-icon">🚇</span>
+                <div>
+                    <h4>Metro Connected</h4>
+                    <p>Nearest metro at Sector-142 — just 1 km away for seamless daily commute</p>
+                </div>
+            </div>
+            <div class="location-item reveal delay-4">
+                <span class="location-icon">🛣️</span>
+                <div>
+                    <h4>Multi-City Access</h4>
+                    <p>Direct connectivity to Delhi, Greater Noida, Yamuna Expressway, Ghaziabad &amp; Faridabad</p>
+                </div>
+            </div>
+            <div class="location-item reveal delay-5">
+                <span class="location-icon">🏛️</span>
+                <div>
+                    <h4>Vastu Compliant</h4>
+                    <p>North-East facing property, built per Vastu guidelines for positive energy &amp; harmony</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ============================================
+         SLIDE 3: THE BUILDING — KEY STATS
+         ============================================ -->
+    <section class="slide gradient-mesh" id="slide-building" data-label="Building">
+        <span class="slide-label reveal">The Building</span>
+        <h2 class="slide-title reveal delay-1">World-Class <span class="gradient-text">Infrastructure</span></h2>
+        <p class="slide-subtitle reveal delay-2">A modern commercial tower built for productivity, collaboration, and growth.</p>
+
+        <div class="stats-grid">
+            <div class="stat-card reveal delay-2">
+                <div class="stat-number" data-target="10">0</div>
+                <div class="stat-label">Floors</div>
+                <div class="stat-unit">Ground + 9</div>
+            </div>
+            <div class="stat-card reveal delay-3">
+                <div class="stat-number" data-target="816">0</div>
+                <div class="stat-label">Total Seats</div>
+                <div class="stat-unit">across all floors</div>
+            </div>
+            <div class="stat-card reveal delay-4">
+                <div class="stat-number" data-target="14023">0</div>
+                <div class="stat-label">Sq.Ft</div>
+                <div class="stat-unit">super area offered</div>
+            </div>
+            <div class="stat-card reveal delay-5">
+                <div class="stat-number" data-target="5">0</div>
+                <div class="stat-label">Lifts</div>
+                <div class="stat-unit">4 passenger + 1 service</div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ============================================
+         SLIDE 4: FLOOR PLAN
+         ============================================ -->
+    <section class="slide" id="slide-floorplan" data-label="Floor Plan">
+        <span class="slide-label reveal">Layout</span>
+        <h2 class="slide-title reveal delay-1">80-Seater <span class="gradient-text">Floor Plan</span></h2>
+        <p class="slide-subtitle reveal delay-2">Each floor features a smart mix of open desks, private cabins, meeting rooms, and communal spaces.</p>
+
+        <div class="floor-plan-container reveal-scale delay-3">
+            <img src="./assets/floor-plan.jpeg" alt="WORK TABLE Floor Plan Layout — 80 seater with 6 Manager Cabins" class="floor-plan-img">
+        </div>
+
+        <div class="floor-plan-legend reveal delay-4">
+            <div class="legend-item"><div class="legend-dot open"></div> Open Desks (L-0 to L-7)</div>
+            <div class="legend-item"><div class="legend-dot cabin"></div> Cabins (C-1 to C-6)</div>
+            <div class="legend-item"><div class="legend-dot meeting"></div> Conference Rooms (A, B)</div>
+            <div class="legend-item"><div class="legend-dot amenity"></div> Reception · Pantry · Lounge</div>
+        </div>
+    </section>
+
+    <!-- ============================================
+         SLIDE 5: SPACES GALLERY
+         ============================================ -->
+    <section class="slide" id="slide-spaces" data-label="Spaces">
+        <span class="slide-label reveal">The Experience</span>
+        <h2 class="slide-title reveal delay-1">Designed for <span class="gradient-text">Inspiration</span></h2>
+        <p class="slide-subtitle reveal delay-2">Premium interiors crafted for focus, comfort, and collaboration.</p>
+
+        <div class="gallery-container reveal-scale delay-3">
+            <div class="gallery-track" id="galleryTrack">
+                <div class="gallery-item">
+                    <img src="./assets/reception-wide.jpeg" alt="WORK TABLE Reception — Modern lounge with curved sofa and reception desk">
+                    <span class="gallery-label">Reception &amp; Lounge</span>
+                </div>
+                <div class="gallery-item">
+                    <img src="./assets/lounge.jpeg" alt="WORK TABLE Lounge — Geometric wall panels, marble tables, designer sofas">
+                    <span class="gallery-label">Lounge Area</span>
+                </div>
+                <div class="gallery-item">
+                    <img src="./assets/pantry.jpeg" alt="WORK TABLE Pantry — Bar seating, patterned floor, modern kitchenette">
+                    <span class="gallery-label">Pantry &amp; Café</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="gallery-controls reveal delay-4">
+            <button class="gallery-btn" onclick="moveGallery(-1)" aria-label="Previous image">←</button>
+            <div class="gallery-indicators" id="galleryIndicators">
+                <div class="gallery-indicator active" onclick="goToGallery(0)"></div>
+                <div class="gallery-indicator" onclick="goToGallery(1)"></div>
+                <div class="gallery-indicator" onclick="goToGallery(2)"></div>
+            </div>
+            <button class="gallery-btn" onclick="moveGallery(1)" aria-label="Next image">→</button>
+        </div>
+    </section>
+
+    <!-- ============================================
+         SLIDE 6: PRIVATE OFFICES
+         ============================================ -->
+    <section class="slide split-slide" id="slide-offices" data-label="Offices">
+        <div class="split-image reveal-left delay-1">
+            <img src="./assets/cabin-3.jpeg" alt="WORK TABLE Cabin-3 — 3-seater private office with glass walls">
+        </div>
+        <div class="split-content">
+            <span class="slide-label reveal delay-1">Private Offices</span>
+            <h2 class="slide-title reveal delay-2">Your Space, <span class="gradient-text">Your Way</span></h2>
+            <p class="slide-subtitle reveal delay-3">Private cabins designed for focused work with natural light, ergonomic furniture, and a professional atmosphere.</p>
+            <ul class="feature-list">
+                <li class="reveal delay-3">4-seater cabins with dedicated manager desk</li>
+                <li class="reveal delay-4">Glass partitions for privacy with openness</li>
+                <li class="reveal delay-4">9 Manager Cabins per floor</li>
+                <li class="reveal delay-5">High-speed internet &amp; power backup</li>
+                <li class="reveal delay-5">4 hrs/month meeting room access included</li>
+                <li class="reveal delay-6">6 hrs/month conference room access included</li>
+            </ul>
+        </div>
+    </section>
+
+    <!-- ============================================
+         SLIDE 7: CONFERENCE ROOMS
+         ============================================ -->
+    <section class="slide" id="slide-conference" data-label="Conference">
+        <span class="slide-label reveal">Meeting Spaces</span>
+        <h2 class="slide-title reveal delay-1">Where Ideas <span class="gradient-text">Come Together</span></h2>
+        <p class="slide-subtitle reveal delay-2">Fully equipped conference rooms with modern AV systems, ring lighting, and seating for up to 8 professionals.</p>
+
+        <div class="dual-image-grid">
+            <img src="./assets/conference-b-1.jpeg" alt="Conference Room B — 8-seater with ring pendant lights" class="reveal-left delay-3">
+            <img src="./assets/conference-b-2.jpeg" alt="Conference Room B — alternate angle with TV display and designer blinds" class="reveal-right delay-3">
+        </div>
+
+        <div class="floor-plan-legend reveal delay-4" style="margin-top: 1.5rem;">
+            <div class="legend-item">🖥️ Projector &amp; Display Screen</div>
+            <div class="legend-item">💡 Designer Ring Lighting</div>
+            <div class="legend-item">🎤 AV Ready</div>
+            <div class="legend-item">👥 8-Seater Capacity</div>
+        </div>
+    </section>
+
+    <!-- ============================================
+         SLIDE 8: COMMERCIAL TERMS
+         ============================================ -->
+    <section class="slide grid-bg" id="slide-terms" data-label="Terms">
+        <span class="slide-label reveal">Commercial Terms</span>
+        <h2 class="slide-title reveal delay-1">Transparent <span class="gradient-text">Pricing</span></h2>
+        <p class="slide-subtitle reveal delay-2">Cost-efficient with top-notch facilities — designed to attract enterprises of every scale.</p>
+
+        <div class="terms-grid">
+            <div class="term-card reveal delay-2">
+                <div class="term-value">₹80<span style="font-size:0.5em">/sqft</span></div>
+                <div class="term-label">Monthly Rental (Warm Shell) + applicable taxes</div>
+            </div>
+            <div class="term-card reveal delay-2">
+                <div class="term-value">₹12<span style="font-size:0.5em">/sqft</span></div>
+                <div class="term-label">Monthly Maintenance Charges + applicable taxes</div>
+            </div>
+            <div class="term-card reveal delay-3">
+                <div class="term-value">3+3+3</div>
+                <div class="term-label">Lease Term in Years with 36-month lock-in</div>
+            </div>
+            <div class="term-card reveal delay-3">
+                <div class="term-value">₹5,000</div>
+                <div class="term-label">Car Parking per slot/month (1:1400 sqft ratio)</div>
+            </div>
+            <div class="term-card reveal delay-4">
+                <div class="term-value">6 Mo.</div>
+                <div class="term-label">Interest-Free Security Deposit (rent + maintenance)</div>
+            </div>
+            <div class="term-card reveal delay-4">
+                <div class="term-value">15%</div>
+                <div class="term-label">Escalation every 3 years on rent, parking &amp; maintenance</div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ============================================
+         SLIDE 9: PRICING TIERS
+         ============================================ -->
+    <section class="slide gradient-mesh" id="slide-pricing" data-label="Pricing">
+        <span class="slide-label reveal">Membership Plans</span>
+        <h2 class="slide-title reveal delay-1" style="text-align:center; width:100%;">Choose Your <span class="gradient-text">Workspace</span></h2>
+        <p class="slide-subtitle reveal delay-2" style="text-align:center; margin:0 auto 0;">Flexible plans for individuals, teams, and enterprises.</p>
+
+        <div class="pricing-grid" style="margin-left:auto; margin-right:auto;">
+            <div class="pricing-card reveal delay-3">
+                <div class="pricing-tier">Starter</div>
+                <div class="pricing-amount"><span class="currency">₹</span>1,000</div>
+                <div class="pricing-period">per slot</div>
+                <ul class="pricing-features">
+                    <li>Open Desk access</li>
+                    <li>High-speed Wi-Fi</li>
+                    <li>Common area access</li>
+                    <li>Tea &amp; coffee included</li>
+                    <li>Business hours access</li>
+                </ul>
+            </div>
+            <div class="pricing-card featured reveal delay-4">
+                <div class="pricing-tier">Professional</div>
+                <div class="pricing-amount"><span class="currency">₹</span>1,500</div>
+                <div class="pricing-period">per slot</div>
+                <ul class="pricing-features">
+                    <li>Everything in Starter</li>
+                    <li>Dedicated desk</li>
+                    <li>Meeting room access (4 hrs)</li>
+                    <li>Storage locker</li>
+                    <li>Extended hours access</li>
+                </ul>
+            </div>
+            <div class="pricing-card reveal delay-5">
+                <div class="pricing-tier">Enterprise</div>
+                <div class="pricing-amount"><span class="currency">₹</span>3,000</div>
+                <div class="pricing-period">per slot</div>
+                <ul class="pricing-features">
+                    <li>Everything in Professional</li>
+                    <li>Private cabin access</li>
+                    <li>Conference room (6 hrs)</li>
+                    <li>Visitor management</li>
+                    <li>24/7 access</li>
+                </ul>
+            </div>
+        </div>
+    </section>
+
+    <!-- ============================================
+         SLIDE 10: CONTACT / CTA
+         ============================================ -->
+    <section class="slide cta-slide" id="slide-contact" data-label="Contact">
+        <span class="slide-label reveal">Get Started</span>
+        <h2 class="slide-title reveal delay-1" style="text-align:center;">Ready to <span class="gradient-text">Elevate</span> Your Workspace?</h2>
+        <p class="slide-subtitle reveal delay-2" style="text-align:center; margin: 0 auto;">Book a tour today and experience the future of coworking at County Spaces.</p>
+
+        <a href="#" class="cta-btn reveal delay-3">
+            Book a Tour →
+        </a>
+
+        <div class="contact-grid reveal delay-4">
+            <div class="contact-item">
+                <div class="icon">📍</div>
+                <h4>Visit Us</h4>
+                <p>Sector-135, Noida<br>Uttar Pradesh, India</p>
+            </div>
+            <div class="contact-item">
+                <div class="icon">⏰</div>
+                <h4>Working Hours</h4>
+                <p>Mon–Sat: 8 AM – 7 PM<br>Sunday: Closed</p>
+            </div>
+            <div class="contact-item">
+                <div class="icon">🚇</div>
+                <h4>Nearest Metro</h4>
+                <p>Sector-142 Station<br>Just 1 km away</p>
+            </div>
+        </div>
+
+        <div class="footer-brand reveal delay-5">
+            © 2026 WORK TABLE · A Coworking Community · County Spaces
+        </div>
+    </section>
+
+    <!-- ============================================
+         JAVASCRIPT: Slide Controller
+         ============================================ -->
+    <script>
+        /* ===========================================
+           SLIDE PRESENTATION CONTROLLER
+           Manages navigation, scroll animations,
+           progress bar, nav dots, and gallery
+           =========================================== */
+
+        class SlidePresentation {
+            constructor() {
+                this.slides = document.querySelectorAll('.slide');
+                this.currentSlide = 0;
+                this.totalSlides = this.slides.length;
+                this.isAnimating = false;
+
+                this.initNavDots();
+                this.initObserver();
+                this.initKeyboard();
+                this.initProgress();
+                this.initCounters();
+            }
+
+            /* --- Navigation Dots --- */
+            initNavDots() {
+                const nav = document.getElementById('navDots');
+                this.slides.forEach((slide, i) => {
+                    const dot = document.createElement('div');
+                    dot.className = 'nav-dot' + (i === 0 ? ' active' : '');
+                    dot.dataset.label = slide.dataset.label || `Slide ${i + 1}`;
+                    dot.addEventListener('click', () => {
+                        slide.scrollIntoView({ behavior: 'smooth' });
+                    });
+                    nav.appendChild(dot);
+                });
+                this.dots = nav.querySelectorAll('.nav-dot');
+            }
+
+            /* --- Intersection Observer for scroll-triggered animations --- */
+            initObserver() {
+                const observer = new IntersectionObserver((entries) => {
+                    entries.forEach(entry => {
+                        if (entry.isIntersecting) {
+                            entry.target.classList.add('visible');
+                            const index = Array.from(this.slides).indexOf(entry.target);
+                            this.currentSlide = index;
+                            this.updateDots(index);
+                            this.updateProgress();
+
+                            // Trigger counter animations
+                            if (entry.target.id === 'slide-building') {
+                                this.animateCounters(entry.target);
+                            }
+                        }
+                    });
+                }, {
+                    threshold: 0.3,
+                    rootMargin: '-10% 0px'
+                });
+
+                this.slides.forEach(slide => observer.observe(slide));
+            }
+
+            /* --- Update nav dots --- */
+            updateDots(activeIndex) {
+                this.dots.forEach((dot, i) => {
+                    dot.classList.toggle('active', i === activeIndex);
+                });
+            }
+
+            /* --- Progress bar --- */
+            initProgress() {
+                window.addEventListener('scroll', () => {
+                    const scrollTop = window.scrollY;
+                    const docHeight = document.documentElement.scrollHeight - window.innerHeight;
+                    const progress = (scrollTop / docHeight) * 100;
+                    document.getElementById('progressBar').style.width = progress + '%';
+                });
+            }
+
+            updateProgress() {
+                const progress = ((this.currentSlide + 1) / this.totalSlides) * 100;
+                document.getElementById('progressBar').style.width = progress + '%';
+            }
+
+            /* --- Keyboard Navigation --- */
+            initKeyboard() {
+                document.addEventListener('keydown', (e) => {
+                    if (this.isAnimating) return;
+
+                    switch(e.key) {
+                        case 'ArrowDown':
+                        case ' ':
+                        case 'PageDown':
+                            e.preventDefault();
+                            this.goToSlide(this.currentSlide + 1);
+                            break;
+                        case 'ArrowUp':
+                        case 'PageUp':
+                            e.preventDefault();
+                            this.goToSlide(this.currentSlide - 1);
+                            break;
+                        case 'Home':
+                            e.preventDefault();
+                            this.goToSlide(0);
+                            break;
+                        case 'End':
+                            e.preventDefault();
+                            this.goToSlide(this.totalSlides - 1);
+                            break;
+                    }
+                });
+            }
+
+            goToSlide(index) {
+                if (index < 0 || index >= this.totalSlides) return;
+                this.isAnimating = true;
+                this.slides[index].scrollIntoView({ behavior: 'smooth' });
+                setTimeout(() => { this.isAnimating = false; }, 800);
+            }
+
+            /* --- Counter Animations --- */
+            initCounters() {
+                this.countersAnimated = false;
+            }
+
+            animateCounters(container) {
+                if (this.countersAnimated) return;
+                this.countersAnimated = true;
+
+                const counters = container.querySelectorAll('[data-target]');
+                counters.forEach(counter => {
+                    const target = parseInt(counter.dataset.target);
+                    const duration = 2000;
+                    const startTime = performance.now();
+
+                    const update = (currentTime) => {
+                        const elapsed = currentTime - startTime;
+                        const progress = Math.min(elapsed / duration, 1);
+                        const eased = 1 - Math.pow(1 - progress, 3); // ease-out cubic
+                        const current = Math.round(eased * target);
+
+                        counter.textContent = current.toLocaleString();
+
+                        if (progress < 1) {
+                            requestAnimationFrame(update);
+                        }
+                    };
+
+                    requestAnimationFrame(update);
+                });
+            }
+        }
+
+        /* ===========================================
+           GALLERY CONTROLLER
+           Handles image carousel on Slide 5
+           =========================================== */
+        let galleryIndex = 0;
+        const galleryTotal = 3;
+
+        function moveGallery(direction) {
+            galleryIndex = (galleryIndex + direction + galleryTotal) % galleryTotal;
+            updateGallery();
+        }
+
+        function goToGallery(index) {
+            galleryIndex = index;
+            updateGallery();
+        }
+
+        function updateGallery() {
+            const track = document.getElementById('galleryTrack');
+            track.style.transform = `translateX(-${galleryIndex * 100}%)`;
+
+            const indicators = document.querySelectorAll('.gallery-indicator');
+            indicators.forEach((ind, i) => {
+                ind.classList.toggle('active', i === galleryIndex);
+            });
+        }
+
+        // Auto-advance gallery
+        let galleryAutoplay;
+        function startGalleryAutoplay() {
+            galleryAutoplay = setInterval(() => moveGallery(1), 4000);
+        }
+
+        function stopGalleryAutoplay() {
+            clearInterval(galleryAutoplay);
+        }
+
+        // Start autoplay when spaces slide is visible
+        const spacesObserver = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    startGalleryAutoplay();
+                } else {
+                    stopGalleryAutoplay();
+                }
+            });
+        }, { threshold: 0.5 });
+
+        document.addEventListener('DOMContentLoaded', () => {
+            const spacesSlide = document.getElementById('slide-spaces');
+            if (spacesSlide) spacesObserver.observe(spacesSlide);
+        });
+
+        /* ===========================================
+           INITIALIZE
+           =========================================== */
+        const presentation = new SlidePresentation();
+    </script>
+</body>
+</html>
