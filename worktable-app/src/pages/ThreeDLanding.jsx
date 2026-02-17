@@ -266,19 +266,21 @@ export default function ThreeDLanding() {
         // Building
         const floors = [];
         const floorGroups = [];
+        let accentColor = 0xc17f59;
 
         for (let i = 0; i < 7; i++) {
             const group = new THREE.Group();
             group.userData = { floorIndex: i, data: floorData[i] };
 
             let floorColor = 0x2d4a3d;
-            let accentColor = 0xc17f59;
             if (i === 0) {
                 floorColor = 0x3d3d5a;
                 accentColor = 0x4ecdc4;
             } else if (i >= 4) {
                 floorColor = 0x4a3d2d;
                 accentColor = 0xe8a87c;
+            } else {
+                accentColor = 0xc17f59;
             }
 
             const slabGeo = new THREE.BoxGeometry(floorWidth, 0.35, floorDepth);
